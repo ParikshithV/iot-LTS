@@ -1,0 +1,7 @@
+pip install virtualenv
+
+virtualenv env
+
+venv\Scripts\activate
+
+pip install flask

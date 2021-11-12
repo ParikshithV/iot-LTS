@@ -2,6 +2,12 @@ pip install virtualenv
 
 virtualenv env
 
-venv\Scripts\activate
+env\Scripts\activate
 
 pip install flask
+
+pip install Adafruit_IO
+
+pip install pymongo
+
+pip install "pymongo[srv]"

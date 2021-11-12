@@ -63,7 +63,7 @@ def update():
 
         data = aio.feeds('rfiddata')
         dataval = aio.receive(data.key)
-        nodes.update_one({"_id" : pnr}, {'$set': {'tag_id': 'data'}})
-        return render_template('confirmation.html', data=dataval.value, pnr=pnr, name=name)
+        nodes.update_one({"_id" : pnr}, {'$set': {'tag_id': data}})
+        return render_template('confirmation.html', data=data, pnr=pnr, name=name)
     else:
         return render_template('registration.html')

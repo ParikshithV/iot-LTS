@@ -1,19 +1,28 @@
+<!DOCTYPE html>
 <html>
     <head>
         <title>Confirmation</title>
     </head>
     <body>
-        <form>
+        <form action="/update", method="POST">
             <p>PNR: </p>
-            <input type="text" name="pnr" disabled value='{{pnr}}'><br/>
+            <input type="text" name="pnr" value='{{pnr}}'><br/>
 
             <p>Name: </p>
-            <input type="text" name="name" disabled value='{{name}}'><br/>
+            <input type="text" name="name" value='{{name}}'><br/>
+
+            <p>Flight No.</p>
+            <input type="text" name="flightno" value='{{fno}}'>
 
             <p>Tag ID: </p>
-            <input type="text" name="tagid" disabled value='{{data}}'>
-            <h3>Refresh page to scan again</h3>
-            <button href="/registration">Continue</button>
+            <input type="text" name="tagid" value='{{data}}'>
+            <button type="submit">Update</button>
+            <a href="/registration">Continue</a>
         </form>
     </body>
 </html>
+<script>
+    function update(){
+        location.href = "/update";
+    }
+</script>

@@ -4,6 +4,13 @@ from requests.api import put
 import pymongo
 import datetime
 
+import os
+app = Flask(__name__)
+picFolder=os.path.join('static')
+app.config['UPLOAD_FOLDER']=picFolder
+pic1=os.path.join(app.config['UPLOAD_FOLDER'],'img4.jpg')
+# pic1=os.path.join(app.config['UPLOAD_FOLDER'],'bgimg.jpg')
+
 dbconn = pymongo.MongoClient("mongodb+srv://zappieruser:userpassword@luggagereg.qodbd.mongodb.net/LuggageReg?retryWrites=true&w=majority")
 mydb = dbconn['LuggageReg']
 mycol = mydb["luggagedb"]
@@ -14,11 +21,11 @@ app = Flask(__name__)
 
 @app.route("/", methods=['GET', 'POST'])
 def get():
-    return render_template('registration.html')
+    return render_template('registration.html',user_image=pic1)
 
 @app.route("/registration", methods=['GET', 'POST'])
 def reg():
-    return render_template('registration.html')
+    return render_template('registration.html',user_image=pic1)
 
 
 @app.route("/read", methods=['GET', 'POST'])
@@ -30,7 +37,6 @@ def read():
 
         toggle = aio.feeds('rfidswitch')
         switch = aio.receive(toggle.key)
-        switchval = switch
         if switch.value == 'on':
             aio.send_data(toggle.key, 'off')
         else:
@@ -43,15 +49,15 @@ def read():
         nodego = { "_id" : pnr, "tag_id" : tagval, "location" : ["checkin"], "lastNode": "checkin", 'lastSeen': datetime.datetime.utcnow()}
         mycol.insert_one(dbgo)
         nodes.insert_one(nodego)
-        return render_template('confirmation.html', data=dataval.value, pnr=pnr, name=name)
+        return render_template('confirmation.html', data=dataval.value, pnr=pnr, name=name, fno=flightno)
     else:
-        return render_template('registration.html')
+        return render_template('registration.html',user_image=pic1)
 
 @app.route("/update", methods=['GET', 'POST'])
 def update():
     if request.method == 'POST':
         pnr = request.form['pnr']
-        data = request.form['tagid']
+        flightno = request.form['flightno']
         name = request.form['name']
 
         toggle = aio.feeds('rfidswitch')
@@ -63,7 +69,21 @@ def update():
 
         data = aio.feeds('rfiddata')
         dataval = aio.receive(data.key)
-        nodes.update_one({"_id" : pnr}, {'$set': {'tag_id': 'data'}})
-        return render_template('confirmation.html', data=dataval.value, pnr=pnr, name=name)
+        tagval=dataval.value
+        nodes.update_one({"_id" : pnr}, {'$set': {'tag_id': tagval}})
+        return render_template('confirmation.html', data=dataval.value, pnr=pnr, name=name, fno=flightno)
     else:
-        return render_template('registration.html')
+        return render_template('registration.html',user_image=pic1)
+
+@app.route("/track", methods=['GET', 'POST'])
+def track():
+     tdata = nodes.find({},{"_id":1, 'lastNode': 1, 'lastSeen':1, 'tag_id':1 })
+     return render_template('track.html',data = tdata)
+
+@app.route("/search", methods=['GET', 'POST'])
+def search():
+    if request.method == 'POST':
+        pnr = request.form['pnr']
+        tdata = nodes.find({'_id':pnr},{"_id":1, 'lastNode': 1, 'lastSeen':1, 'tag_id':1 })
+        print(tdata)
+        return render_template('track.html',data = tdata)

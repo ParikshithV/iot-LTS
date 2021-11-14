@@ -11,7 +11,7 @@ ADAFRUIT_IO_KEY = 'aio_gykX28Fv6J5XVu33poXHccsjwqaa'
 
 ADAFRUIT_IO_USERNAME = 'RedRabbit1'
 
-FEED_ID = 'node1'
+FEED_ID = 'node2'
 
 def connected(client):
     print('Connected to Adafruit IO!  Listening for {0} changes...'.format(FEED_ID))
@@ -26,13 +26,10 @@ def disconnected(client):
 
 def message(client, feed_id, payload):
     nodes = mydb['trackdb']
-    nodes.update_one({"tag_id" : payload}, {'$push': {'location': 'checkin'}})
-    nodes.update_one({"tag_id" : payload}, {'$set': {'lastNode': 'checkin'}})
+    nodes.update_one({"tag_id" : payload}, {'$push': {'location': 'node2'}})
+    nodes.update_one({"tag_id" : payload}, {'$set': {'lastNode': 'node2'}})
     nodes.update_one({"tag_id" : payload}, {'$set': {'lastSeen': datetime.datetime.utcnow()}})
     print('Feed {0} received new value: {1}'.format(feed_id, payload))
-
-for x in nodes.find():
-  print(x)
 
 client = MQTTClient(ADAFRUIT_IO_USERNAME, ADAFRUIT_IO_KEY)
 

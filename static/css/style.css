@@ -5,29 +5,33 @@
   }
   body
   {
-    /* background: #bdc3c7;  
-    background: -webkit-linear-gradient(to right, #2c3e50, #bdc3c7); 
-    background: linear-gradient(to right, #2c3e50, #bdc3c7);  */
-
-    background: #000000;  /* fallback for old browsers */
-    background: -webkit-linear-gradient(to right, #434343, #000000);  /* Chrome 10-25, Safari 5.1-6 */
-    background: linear-gradient(to right, #434343, #000000); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    background: url("https://images.pexels.com/photos/804463/pexels-photo-804463.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940");
+    
+    
   }
   .row
   {
-   background: white;
-
+      background-color: rgba(255, 255, 255, 0.61);
+      backdrop-filter: blur(5px);
+      border-radius: 30px;
   }
    img
   {
     border-top-left-radius: 30px;
     border-bottom-left-radius: 30px;
+    max-height: 600px;
     
   } 
 
   .btn
   {
     font-weight: bold;
+  }
+
+  .form-row
+  {
+    font-size: larger;
+    font-weight: bolder;
   }
   
   

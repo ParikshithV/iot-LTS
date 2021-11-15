@@ -21,7 +21,7 @@ app = Flask(__name__)
 
 @app.route("/", methods=['GET', 'POST'])
 def get():
-    return render_template('registration.html',user_image=pic1)
+    return render_template('home.html',user_image=pic1)
 
 @app.route("/registration", methods=['GET', 'POST'])
 def reg():

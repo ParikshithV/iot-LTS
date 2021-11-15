@@ -32,7 +32,6 @@ def login():
         # if (pnr in  nodes.find({})):
     return render_template('login.html' ,image=pic1)
 
-
 @app.route("/registration", methods=['GET', 'POST'])
 def reg():
     return render_template('registration.html', user_image=pic1)

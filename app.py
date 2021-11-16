@@ -1,23 +1,23 @@
-from flask import Flask, render_template, url_for, request, redirect, session
+from flask import Flask, render_template, request, session
 from Adafruit_IO import Client, MQTTClient
 from requests.api import put
 import pymongo
 import datetime
-
 import os
+
 app = Flask(__name__)
+app.secret_key = '2021'
 picFolder = os.path.join('static')
 app.config['UPLOAD_FOLDER'] = picFolder
 pic1 = os.path.join(app.config['UPLOAD_FOLDER'], 'img4.jpg')
 pic2 = os.path.join(app.config['UPLOAD_FOLDER'], 'img9.jpg')
 # pic1=os.path.join(app.config['UPLOAD_FOLDER'],'bgimg.jpg')
 
-dbconn = pymongo.MongoClient(
-    "mongodb+srv://zappieruser:userpassword@luggagereg.qodbd.mongodb.net/LuggageReg?retryWrites=true&w=majority")
+dbconn = pymongo.MongoClient("mongodb+srv://zappieruser:userpassword@luggagereg.qodbd.mongodb.net/LuggageReg?retryWrites=true&w=majority")
 mydb = dbconn['LuggageReg']
 mycol = mydb["luggagedb"]
 nodes = mydb["trackdb"]
-user = mydb["user"]
+# user = mydb["user"]
 aio = Client('RedRabbit1', 'aio_gykX28Fv6J5XVu33poXHccsjwqaa')
 
 
@@ -25,12 +25,36 @@ aio = Client('RedRabbit1', 'aio_gykX28Fv6J5XVu33poXHccsjwqaa')
 def home():
     return render_template('home.html')
 
-@app.route("/login", methods=['GET', 'POST'])
-def login():
-    #  if request.method == 'POST':
-    #     pnr = request.form['pnr']
-        # if (pnr in  nodes.find({})):
-    return render_template('login.html' ,image=pic1)
+@app.route("/adminlogin", methods=['GET', 'POST'])
+def adminlogin():
+    if request.method == 'POST':
+        name = request.form['name']
+        password = request.form['password']
+        if (name=='admin' and password=='pesu'):
+            session['admin'] = 'admin'
+            tdata = nodes.find({}, {"_id": 1, 'lastNode': 1,'lastSeen': 1, 'tag_id': 1})
+            return render_template('track.html', data=tdata)
+        else:
+            return render_template('alogin.html', user_image=pic1, err="alert")
+    else:
+        return render_template('alogin.html', user_image=pic1)
+
+@app.route("/userlogin", methods=['GET', 'POST'])
+def userlogin():
+    if request.method == 'POST':
+        pnr = request.form['pnr']
+        name = request.form['name']
+        tdata = mycol.find_one({'name':name}, {"_id": 1, 'name': 1})['_id']
+        
+        if tdata == pnr:
+            session['user'] = 'user'
+            tdata = nodes.find({'_id': pnr}, {"_id": 1, 'lastNode': 1, 'lastSeen': 1, 'tag_id': 1, 'name': 1})
+            print(tdata)
+            return render_template('userdash.html', data=tdata)
+        else:
+            return render_template('userdash.html', user_image=pic1, err="alert")
+    else:
+        return render_template('ulogin.html', user_image=pic1)
 
 @app.route("/registration", methods=['GET', 'POST'])
 def reg():
@@ -54,10 +78,8 @@ def read():
         data = aio.feeds('rfiddata')
         dataval = aio.receive(data.key)
         tagval = dataval.value
-        dbgo = {"_id": pnr, "tag_id": tagval,
-                "flightno": flightno, "name": name}
-        nodego = {"_id": pnr, "tag_id": tagval, "location": [
-            "checkin"], "lastNode": "checkin", 'lastSeen': datetime.datetime.utcnow()}
+        dbgo = {"_id": pnr, "tag_id": tagval, "flightno": flightno, "name": name}
+        nodego = {"_id": pnr, "tag_id": tagval, "location": ["checkin"], "lastNode": "checkin", 'lastSeen': datetime.datetime.utcnow()}
         mycol.insert_one(dbgo)
         nodes.insert_one(nodego)
         return render_template('confirmation.html', data=dataval.value, pnr=pnr, name=name, fno=flightno)
@@ -90,8 +112,11 @@ def update():
 
 @app.route("/track", methods=['GET', 'POST'])
 def track():
-    tdata = nodes.find({}, {"_id": 1, 'lastNode': 1,'lastSeen': 1, 'tag_id': 1})
-    return render_template('track.html', data=tdata)
+    if 'admin' in session:
+        tdata = nodes.find({}, {"_id": 1, 'lastNode': 1,'lastSeen': 1, 'tag_id': 1})
+        return render_template('track.html', data=tdata)
+    else:
+        return render_template('alogin.html', user_image=pic1)
 
 
 @app.route("/search", methods=['GET', 'POST'])
@@ -107,7 +132,7 @@ def search():
 def confirm():
     return render_template('confirmation.html')
 
-# @app.route("/user", methods=['GET', 'POST'])
-# def user():
-#     values =user.find({}, {"_id": 1, 'name': 1,'last_seen': 1})
-#     return render_template('user.html', data=values)
+@app.route("/logout", methods=['GET', 'POST'])
+def logout():
+    session.clear()
+    return render_template('home.html')

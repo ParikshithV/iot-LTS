@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+    <title>Track</title>
+
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 90%;
+            margin: 2%;
+            margin-top: 0;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 8px;
+        }
+
+        td {
+            width: 15%;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="card">
+        <div style="padding: 0 5px;" class="prodd">
+            <h3 style="padding-top: 2%; padding-left: 2%;">Luggage Tracking Details:</h3>
+            <table>
+                <tr rowspan="3">
+                </tr>
+                <tr>
+                    <th>Passenger PNR</th>
+                    <th>Last Seen at Node</th>
+                    <th>Last Seen (UTC Time)</th>
+                    <th>Last Seen (Local Time)</th>
+                    <th>Luggage Tag ID</th>
+                </tr>
+                {% for item in data %}
+                <tr>
+                    <td>{{ item._id }}</td>
+                    <td>{{ item.lastNode }}</td>
+                    <td>{{ item.lastSeen }}</td>
+                    <script>
+                        var localDate = new Date('{{item.lastSeen}} Z')
+                        document.write('<td>',localDate,'</td>')
+                    </script>
+                    <td>{{ item.tag_id }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+            <div style="text-align: center;"><a href="/logout">Close</a></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
+
+</body>
+
+</html>

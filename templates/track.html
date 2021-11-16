@@ -44,7 +44,9 @@
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
                 aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
+                <span class="navbar-toggler-icon">
+                    <a class="nav-link active" href="/userlogin">User Login</a>
+                </span>
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
@@ -52,12 +54,19 @@
                         <a class="nav-link active" aria-current="page" href="/">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="/">Check-in</a>
+                        <a class="nav-link active" href="/registration">Check-in</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link active" href="/track">Track Luggage</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/adminlogin">Admin Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/userlogin">User Login</a>
+                    </li>
                 </ul>
+                <div style="text-align: right;"><a href="/logout">Go Back</a></div>
             </div>
         </div>
     </nav>
@@ -82,6 +91,7 @@
                     <th>Passenger PNR</th>
                     <th>Last Seen at Node</th>
                     <th>Last Seen (UTC Time)</th>
+                    <th>Last Seen (Local Time)</th>
                     <th>Luggage Tag ID</th>
                 </tr>
                 {% for item in data %}
@@ -89,6 +99,10 @@
                     <td>{{ item._id }}</td>
                     <td>{{ item.lastNode }}</td>
                     <td>{{ item.lastSeen }}</td>
+                    <script>
+                        var localDate = new Date('{{item.lastSeen}} Z')
+                        document.write('<td>',localDate,'</td>')
+                    </script>
                     <td>{{ item.tag_id }}</td>
                 </tr>
                 {% endfor %}

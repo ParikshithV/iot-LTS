@@ -71,42 +71,32 @@
     </div>
   </nav>
 
-  <section class="form my-5 mx-5" onsubmit="rfidAnimate()">
+  <section class="form my-5 mx-5">
     <div class="container">
       <div class="row gx-0 pb-0" style="max-height: 600px;">
         <div class="col-lg-5">
           <img src="{{user_image}}" class="img-fluid" alt="side-image">
         </div>
         <div class="col-lg-7 px-5 pt-5">
-          <h1 class="font-weight-bold py-2">Enter Passenger Details</h1>
-
-          <form action="/read" , method="POST">
+          <h1 class="font-weight-bold py-2">Enter Admin Details</h1>
+          <form action="/adminlogin" , method="POST">
             <div class="form-row pt-2">
               <div class="col-lg-7">
-                <label for="pnr">PNR :</label>
-                <input type="text" name="pnr" id="pnr" class="form-control my-3 p-3" placeholder="PNR" required>
+                <label for="pnr">Admin Name :</label>
+                <input type="text" name="name" id="name" class="form-control my-3 p-3" placeholder="Admin Name" required>
+              </div>
+            </div>
+            <div class="form-row pt-2">
+              <div class="col-lg-7">
+                <label for="pnr">Password :</label>
+                <input type="password" name="password" id="password" class="form-control my-3 p-3" placeholder="Password" required>
               </div>
             </div>
             <div class="form-row">
               <div class="col-lg-7">
-                <label for="flight_no">Flight No :</label>
-                <input type="text" name="flightno" id="flight_no" class="form-control my-3 p-3" placeholder="Flignt no."
-                  required>
+                <button type="submit" class="btn btn-outline-dark">Login</button>
               </div>
             </div>
-            <div class="form-row">
-              <div class="col-lg-7">
-                <label for="p_name">Passenger Name :</label>
-                <input type="text" name="name" id="p_name" class="form-control my-3 p-3" placeholder="Passenger Name"
-                  required>
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="col-lg-7">
-                <button type="submit" class="btn btn-outline-dark">Scan Baggage Tag and Check In</button>
-              </div>
-            </div>
-
           </form>
         </div>
       </div>
@@ -118,32 +108,6 @@
     crossorigin="anonymous"></script>
 
 </body>
+<script>{{ err }}('Invalid login data')</script>
 
 </html>
-
-<script>
-  function rfidAnimate() {
-    let timerInterval
-    Swal.fire({
-      title: 'Scanning RFID Tag',
-      html: '',
-      timer: 5000,
-      timerProgressBar: true,
-      didOpen: () => {
-        Swal.showLoading()
-        const b = Swal.getHtmlContainer().querySelector('b')
-        timerInterval = setInterval(() => {
-          b.textContent = Swal.getTimerLeft()
-        }, 100)
-      },
-      willClose: () => {
-        clearInterval(timerInterval)
-      }
-    }).then((result) => {
-      /* Read more about handling dismissals below */
-      if (result.dismiss === Swal.DismissReason.timer) {
-        console.log('I was closed by the timer')
-      }
-    })
-  }
-</script>

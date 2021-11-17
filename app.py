@@ -11,7 +11,7 @@ picFolder = os.path.join('static')
 app.config['UPLOAD_FOLDER'] = picFolder
 pic1 = os.path.join(app.config['UPLOAD_FOLDER'], 'img4.jpg')
 pic2 = os.path.join(app.config['UPLOAD_FOLDER'], 'img9.jpg')
-# pic1=os.path.join(app.config['UPLOAD_FOLDER'],'bgimg.jpg')
+
 
 dbconn = pymongo.MongoClient("mongodb+srv://zappieruser:userpassword@luggagereg.qodbd.mongodb.net/LuggageReg?retryWrites=true&w=majority")
 mydb = dbconn['LuggageReg']
@@ -82,7 +82,7 @@ def read():
         nodego = {"_id": pnr, "tag_id": tagval, "location": ["checkin"], "lastNode": "checkin", 'lastSeen': datetime.datetime.utcnow()}
         mycol.insert_one(dbgo)
         nodes.insert_one(nodego)
-        return render_template('confirmation.html', data=dataval.value, pnr=pnr, name=name, fno=flightno)
+        return render_template('confirmation.html',user_image=pic1, data=dataval.value, pnr=pnr, name=name, fno=flightno)
     else:
         return render_template('registration.html', user_image=pic1)
 
@@ -105,7 +105,7 @@ def update():
         dataval = aio.receive(data.key)
         tagval = dataval.value
         nodes.update_one({"_id": pnr}, {'$set': {'tag_id': tagval}})
-        return render_template('confirmation.html', data=dataval.value, pnr=pnr, name=name, fno=flightno)
+        return render_template('confirmation.html',user_image=pic1, data=dataval.value, pnr=pnr, name=name, fno=flightno)
     else:
         return render_template('registration.html', user_image=pic1)
 
@@ -130,7 +130,7 @@ def search():
 
 @app.route("/confirm", methods=['GET', 'POST'])
 def confirm():
-    return render_template('confirmation.html')
+    return render_template('confirmation.html',user_image=pic1)
 
 @app.route("/logout", methods=['GET', 'POST'])
 def logout():

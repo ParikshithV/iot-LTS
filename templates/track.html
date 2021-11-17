@@ -33,6 +33,92 @@
         tr:nth-child(even) {
             background-color: #f2f2f2;
         }
+
+        .stepper-wrapper {
+            margin-top: auto;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .stepper-item {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+
+            @media (max-width: 768px) {
+                font-size: 12px;
+            }
+        }
+
+        .stepper-item::before {
+            position: absolute;
+            content: "";
+            border-bottom: 2px solid #ccc;
+            width: 100%;
+            top: 20px;
+            left: -50%;
+            z-index: 2;
+        }
+
+        .stepper-item::after {
+            position: absolute;
+            content: "";
+            border-bottom: 2px solid #ccc;
+            width: 100%;
+            top: 20px;
+            left: 50%;
+            z-index: 2;
+        }
+
+        .stepper-item .step-counter {
+            position: relative;
+            z-index: 5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #ccc;
+            margin-bottom: 6px;
+        }
+
+        .stepper-item.active {
+            font-weight: bold;
+        }
+
+        .stepper-item.completed .step-counter {
+            background-color: #4bb543;
+        }
+
+        .stepper-item.completed::after {
+            position: absolute;
+            content: "";
+            border-bottom: 2px solid #4bb543;
+            width: 100%;
+            top: 20px;
+            left: 50%;
+            z-index: 3;
+        }
+
+        .stepper-item:first-child::before {
+            content: none;
+        }
+
+        .stepper-item:last-child::after {
+            content: none;
+        }
+
+        .dot {
+            height: 25px;
+            width: 25px;
+            background-color: rgb(255, 255, 255);
+            border-radius: 50%;
+            display: inline-block;
+        }
     </style>
 
 </head>
@@ -85,8 +171,6 @@
         <div style="padding: 0 5px;" class="prodd">
             <h3 style="padding-top: 2%; padding-left: 2%;">Luggage Tracking Details:</h3>
             <table>
-                <tr rowspan="3">
-                </tr>
                 <tr>
                     <th>Passenger PNR</th>
                     <th>Last Seen at Node</th>
@@ -101,9 +185,22 @@
                     <td>{{ item.lastSeen }}</td>
                     <script>
                         var localDate = new Date('{{item.lastSeen}} Z')
-                        document.write('<td>',localDate,'</td>')
+                        document.write('<td>', localDate, '</td>')
                     </script>
                     <td>{{ item.tag_id }}</td>
+                </tr>
+                <tr style="border-bottom: 1pt solid black;">
+                    <th>History:</th>
+                    <td colspan="4">
+                        <div class="stepper-wrapper">
+                            {% for node in item.location %}
+                            <div class="stepper-item completed">
+                                <div class="step-counter"><span class="dot"></span></div>
+                                <div class="step-name">{{ node }}</div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </td>
                 </tr>
                 {% endfor %}
             </table>

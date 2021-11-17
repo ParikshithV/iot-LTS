@@ -32,7 +32,7 @@ def adminlogin():
         password = request.form['password']
         if (name=='admin' and password=='pesu'):
             session['admin'] = 'admin'
-            tdata = nodes.find({}, {"_id": 1, 'lastNode': 1,'lastSeen': 1, 'tag_id': 1})
+            tdata = nodes.find({}, {"_id": 1, 'lastNode': 1,'lastSeen': 1, 'tag_id': 1, 'location': 1})
             return render_template('track.html', data=tdata)
         else:
             return render_template('alogin.html', user_image=pic1, err="alert")
@@ -48,8 +48,7 @@ def userlogin():
         
         if tdata == pnr:
             session['user'] = 'user'
-            tdata = nodes.find({'_id': pnr}, {"_id": 1, 'lastNode': 1, 'lastSeen': 1, 'tag_id': 1, 'name': 1})
-            print(tdata)
+            tdata = nodes.find({'_id': pnr}, {"_id": 1, 'lastNode': 1, 'lastSeen': 1, 'tag_id': 1, 'name': 1, 'location': 1})
             return render_template('userdash.html', data=tdata)
         else:
             return render_template('userdash.html', user_image=pic1, err="alert")
@@ -113,7 +112,7 @@ def update():
 @app.route("/track", methods=['GET', 'POST'])
 def track():
     if 'admin' in session:
-        tdata = nodes.find({}, {"_id": 1, 'lastNode': 1,'lastSeen': 1, 'tag_id': 1})
+        tdata = nodes.find({}, {"_id": 1, 'lastNode': 1,'lastSeen': 1, 'tag_id': 1, 'location': 1})
         return render_template('track.html', data=tdata)
     else:
         return render_template('alogin.html', user_image=pic1)
@@ -121,11 +120,13 @@ def track():
 
 @app.route("/search", methods=['GET', 'POST'])
 def search():
-    if request.method == 'POST':
-        pnr = request.form['pnr']
-        tdata = nodes.find({'_id': pnr}, {"_id": 1, 'lastNode': 1, 'lastSeen': 1, 'tag_id': 1})
-        print(tdata)
-        return render_template('track.html', data=tdata)
+    if 'admin' in session:
+        if request.method == 'POST':
+            pnr = request.form['pnr']
+            tdata = nodes.find({'_id': pnr}, {"_id": 1, 'lastNode': 1, 'lastSeen': 1, 'tag_id': 1, 'location': 1})
+            return render_template('track.html', data=tdata)
+    else:
+        return render_template('alogin.html', user_image=pic1)
 
 
 @app.route("/confirm", methods=['GET', 'POST'])

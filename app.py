@@ -12,17 +12,33 @@ app.config['UPLOAD_FOLDER'] = picFolder
 pic1 = os.path.join(app.config['UPLOAD_FOLDER'], 'img4.jpg')
 pic2 = os.path.join(app.config['UPLOAD_FOLDER'], 'img9.jpg')
 
-
+pymongo.MongoClient("mongodb+srv://zappieruser:userpassword@luggagetracking.qodbd.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
 dbconn = pymongo.MongoClient()
 mydb = dbconn['luggageTracking']
 mycol = mydb["luggagedb"]
 nodes = mydb["trackdb"]
+feed = mydb["feedback"]
 aio = Client('RedRabbit1', 'aio_gykX28Fv6J5XVu33poXHccsjwqaa')
 
 
 @app.route("/", methods=['GET', 'POST'])
 def home():
     return render_template('home.html')
+
+@app.route("/feedback", methods=['GET', 'POST'])
+def feedback():
+    if request.method == 'POST':
+        name = request.form['name']
+        pnr = request.form['pnr']
+        feed = request.form['feed']
+        send = {"_id": pnr, "name": name, "feedback": feed}
+        feed.insert_one(send)
+    return render_template('feedback.html')
+
+@app.route("/d_feedback", methods=['GET', 'POST'])
+def d_feedback():
+        fdata = feed.find({}, {"_id": 1, 'name': 1,'feedback': 1})
+        return render_template('display_feed.html', fdata=fdata)
 
 @app.route("/adminlogin", methods=['GET', 'POST'])
 def adminlogin():

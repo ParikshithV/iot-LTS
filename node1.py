@@ -31,9 +31,6 @@ def message(client, feed_id, payload):
     nodes.update_one({"tag_id" : payload}, {'$set': {'lastSeen': datetime.datetime.utcnow()}})
     print('Feed {0} received new value: {1}'.format(feed_id, payload))
 
-for x in nodes.find():
-  print(x)
-
 client = MQTTClient(ADAFRUIT_IO_USERNAME, ADAFRUIT_IO_KEY)
 
 client.on_connect    = connected

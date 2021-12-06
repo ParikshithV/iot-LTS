@@ -13,11 +13,10 @@ pic1 = os.path.join(app.config['UPLOAD_FOLDER'], 'img4.jpg')
 pic2 = os.path.join(app.config['UPLOAD_FOLDER'], 'img9.jpg')
 
 
-dbconn = pymongo.MongoClient("mongodb+srv://zappieruser:userpassword@luggagereg.qodbd.mongodb.net/LuggageReg?retryWrites=true&w=majority")
-mydb = dbconn['LuggageReg']
+dbconn = pymongo.MongoClient()
+mydb = dbconn['luggageTracking']
 mycol = mydb["luggagedb"]
 nodes = mydb["trackdb"]
-# user = mydb["user"]
 aio = Client('RedRabbit1', 'aio_gykX28Fv6J5XVu33poXHccsjwqaa')
 
 
@@ -32,7 +31,7 @@ def adminlogin():
         password = request.form['password']
         if (name=='admin' and password=='pesu'):
             session['admin'] = 'admin'
-            tdata = nodes.find({}, {"_id": 1, 'lastNode': 1,'lastSeen': 1, 'tag_id': 1})
+            tdata = nodes.find({}, {"pnr": 1, 'lastNode': 1,'lastSeen': 1, 'pnr': 1, 'location': 1})
             return render_template('track.html', data=tdata)
         else:
             return render_template('alogin.html', user_image=pic1, err="alert")
@@ -48,8 +47,7 @@ def userlogin():
         
         if tdata == pnr:
             session['user'] = 'user'
-            tdata = nodes.find({'_id': pnr}, {"_id": 1, 'lastNode': 1, 'lastSeen': 1, 'tag_id': 1, 'name': 1})
-            print(tdata)
+            tdata = nodes.find({'pnr': pnr}, {"_id": 1, 'lastNode': 1, 'lastSeen': 1, 'pnr': 1, 'name': 1, 'location': 1})
             return render_template('userdash.html', data=tdata)
         else:
             return render_template('userdash.html', user_image=pic1, err="alert")
@@ -78,10 +76,6 @@ def read():
         data = aio.feeds('rfiddata')
         dataval = aio.receive(data.key)
         tagval = dataval.value
-        dbgo = {"_id": pnr, "tag_id": tagval, "flightno": flightno, "name": name}
-        nodego = {"_id": pnr, "tag_id": tagval, "location": ["checkin"], "lastNode": "checkin", 'lastSeen': datetime.datetime.utcnow()}
-        mycol.insert_one(dbgo)
-        nodes.insert_one(nodego)
         return render_template('confirmation.html',user_image=pic1, data=dataval.value, pnr=pnr, name=name, fno=flightno)
     else:
         return render_template('registration.html', user_image=pic1)
@@ -93,19 +87,15 @@ def update():
         pnr = request.form['pnr']
         flightno = request.form['flightno']
         name = request.form['name']
-
-        toggle = aio.feeds('rfidswitch')
-        switch = aio.receive(toggle.key)
-        if switch.value == 'on':
-            aio.send_data(toggle.key, 'off')
-        else:
-            aio.send_data(toggle.key, 'on')
-
-        data = aio.feeds('rfiddata')
-        dataval = aio.receive(data.key)
-        tagval = dataval.value
-        nodes.update_one({"_id": pnr}, {'$set': {'tag_id': tagval}})
-        return render_template('confirmation.html',user_image=pic1, data=dataval.value, pnr=pnr, name=name, fno=flightno)
+        tagdata = request.form['data']
+        dbgo = {"_id": tagdata, "pnr": pnr, "flightno": flightno, "name": name}
+        nodego = {"_id": tagdata, "pnr": pnr, "location": ["checkin"], "lastNode": "checkin", 'lastSeen': datetime.datetime.utcnow()}
+        try:
+            mycol.insert_one(dbgo)
+            nodes.insert_one(nodego)
+        except:
+            return ("<p>Error</p>")
+        return render_template('confirmation.html',user_image=pic1, data=tagdata, pnr=pnr, name=name, fno=flightno)
     else:
         return render_template('registration.html', user_image=pic1)
 
@@ -113,7 +103,7 @@ def update():
 @app.route("/track", methods=['GET', 'POST'])
 def track():
     if 'admin' in session:
-        tdata = nodes.find({}, {"_id": 1, 'lastNode': 1,'lastSeen': 1, 'tag_id': 1})
+        tdata = nodes.find({}, {"_id": 1, 'lastNode': 1,'lastSeen': 1, 'pnr': 1, 'location': 1})
         return render_template('track.html', data=tdata)
     else:
         return render_template('alogin.html', user_image=pic1)
@@ -121,11 +111,13 @@ def track():
 
 @app.route("/search", methods=['GET', 'POST'])
 def search():
-    if request.method == 'POST':
-        pnr = request.form['pnr']
-        tdata = nodes.find({'_id': pnr}, {"_id": 1, 'lastNode': 1, 'lastSeen': 1, 'tag_id': 1})
-        print(tdata)
-        return render_template('track.html', data=tdata)
+    if 'admin' in session:
+        if request.method == 'POST':
+            pnr = request.form['pnr']
+            tdata = nodes.find({'pnr': pnr}, {"pnr": 1, 'lastNode': 1, 'lastSeen': 1, 'pnr': 1, 'location': 1})
+            return render_template('track.html', data=tdata)
+    else:
+        return render_template('alogin.html', user_image=pic1)
 
 
 @app.route("/confirm", methods=['GET', 'POST'])

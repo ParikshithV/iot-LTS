@@ -13,8 +13,8 @@ pic1 = os.path.join(app.config['UPLOAD_FOLDER'], 'img4.jpg')
 pic2 = os.path.join(app.config['UPLOAD_FOLDER'], 'img9.jpg')
 
 
-dbconn = pymongo.MongoClient("mongodb+srv://zappieruser:userpassword@luggagereg.qodbd.mongodb.net/LuggageReg?retryWrites=true&w=majority")
-mydb = dbconn['LuggageReg']
+dbconn = pymongo.MongoClient()
+mydb = dbconn['luggageTracking']
 mycol = mydb["luggagedb"]
 nodes = mydb["trackdb"]
 aio = Client('RedRabbit1', 'aio_gykX28Fv6J5XVu33poXHccsjwqaa')

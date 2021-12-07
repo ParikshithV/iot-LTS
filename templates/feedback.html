@@ -41,14 +41,14 @@
     </nav>
 
 
-    <form action="/read" , method="POST" class="my-5 mx-5">
+    <form action="/feedback" , method="POST" class="my-5 mx-5">
       <div class="form-floating mb-3">
-        <input type="text" class="form-control" name="name" id="floatingInput" placeholder="Name">
+        <input type="text" class="form-control" name="name" id="floatingInput" value='{{name}}'>
         <label for="floatingInput">Your name</label>
       </div>
 
       <div class="form-floating mb-3">
-        <input type="text" class="form-control" name="pnr" id="floatingInput" placeholder="PNR">
+        <input type="text" class="form-control" name="pnr" id="floatingInput" value='{{pnr}}'>
         <label for="floatingInput">PNR</label>
       </div>
 
@@ -59,7 +59,7 @@
 
 
       <div class="form-floating mb-3 my-3">
-        <button type="button" class="btn btn-dark ">Submit</button>
+        <button type="submit" class="btn btn-dark ">Submit</button>
       </div>
       
     </form>

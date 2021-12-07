@@ -12,12 +12,12 @@ app.config['UPLOAD_FOLDER'] = picFolder
 pic1 = os.path.join(app.config['UPLOAD_FOLDER'], 'img4.jpg')
 pic2 = os.path.join(app.config['UPLOAD_FOLDER'], 'img9.jpg')
 
-pymongo.MongoClient("mongodb+srv://zappieruser:userpassword@luggagetracking.qodbd.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
-# dbconn = pymongo.MongoClient()
+# dbconn =  pymongo.MongoClient("mongodb+srv://zappieruser:userpassword@luggagetracking.qodbd.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
+dbconn = pymongo.MongoClient()
 mydb = dbconn['luggageTracking']
+feedbk = mydb["feedback"]
 mycol = mydb["luggagedb"]
 nodes = mydb["trackdb"]
-feed = mydb["feedback"]
 aio = Client('RedRabbit1', 'aio_gykX28Fv6J5XVu33poXHccsjwqaa')
 
 
@@ -31,13 +31,19 @@ def feedback():
         name = request.form['name']
         pnr = request.form['pnr']
         feed = request.form['feed']
-        send = {"_id": pnr, "name": name, "feedback": feed}
-        feed.insert_one(send)
-    return render_template('feedback.html')
+        send = {"pnr": pnr, "name": name, "feedback": feed}
+        feedbk.insert_one(send)
+        tdata = nodes.find({'pnr': pnr}, {"_id": 1, 'lastNode': 1, 'lastSeen': 1, 'pnr': 1, 'name': 1, 'location': 1})
+        return render_template('userdash.html', data=tdata)
+    else:
+        name = session["name"]
+        pnr = session["pnr"]
+        return render_template('feedback.html', name=name, pnr=pnr)
+
 
 @app.route("/d_feedback", methods=['GET', 'POST'])
 def d_feedback():
-        fdata = feed.find({}, {"_id": 1, 'name': 1,'feedback': 1})
+        fdata = feedbk.find({}, {"pnr": 1, 'name': 1,'feedback': 1})
         return render_template('display_feed.html', fdata=fdata)
 
 @app.route("/adminlogin", methods=['GET', 'POST'])
@@ -63,6 +69,8 @@ def userlogin():
             pnrdata = mycol.find_one({'name':name}, {"_id": 1, 'name': 1})['name']
             if pnrdata == name:
                 session['user'] = 'user'
+                session['pnr'] = pnr
+                session['name'] = name
                 tdata = nodes.find({'pnr': pnr}, {"_id": 1, 'lastNode': 1, 'lastSeen': 1, 'pnr': 1, 'name': 1, 'location': 1})
                 return render_template('userdash.html', data=tdata)
             else:

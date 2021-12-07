@@ -12,7 +12,7 @@ app.config['UPLOAD_FOLDER'] = picFolder
 pic1 = os.path.join(app.config['UPLOAD_FOLDER'], 'img4.jpg')
 pic2 = os.path.join(app.config['UPLOAD_FOLDER'], 'img9.jpg')
 
-
+# dbconn = pymongo.MongoClient("mongodb+srv://zappieruser:userpassword@luggagetracking.qodbd.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
 dbconn = pymongo.MongoClient()
 mydb = dbconn['luggageTracking']
 mycol = mydb["luggagedb"]
@@ -43,14 +43,16 @@ def userlogin():
     if request.method == 'POST':
         pnr = request.form['pnr']
         name = request.form['name']
-        tdata = mycol.find_one({'name':name}, {"_id": 1, 'name': 1})['_id']
-        
-        if tdata == pnr:
-            session['user'] = 'user'
-            tdata = nodes.find({'pnr': pnr}, {"_id": 1, 'lastNode': 1, 'lastSeen': 1, 'pnr': 1, 'name': 1, 'location': 1})
-            return render_template('userdash.html', data=tdata)
-        else:
-            return render_template('userdash.html', user_image=pic1, err="alert")
+        try:
+            pnrdata = mycol.find_one({'name':name}, {"_id": 1, 'name': 1})['name']
+            if pnrdata == name:
+                session['user'] = 'user'
+                tdata = nodes.find({'pnr': pnr}, {"_id": 1, 'lastNode': 1, 'lastSeen': 1, 'pnr': 1, 'name': 1, 'location': 1})
+                return render_template('userdash.html', data=tdata)
+            else:
+                return render_template('userdash.html', user_image=pic1, err="alert")
+        except:
+            return render_template('ulogin.html', user_image=pic1, err="alert")
     else:
         return render_template('ulogin.html', user_image=pic1)
 
@@ -89,12 +91,12 @@ def update():
         name = request.form['name']
         tagdata = request.form['data']
         dbgo = {"_id": tagdata, "pnr": pnr, "flightno": flightno, "name": name}
-        nodego = {"_id": tagdata, "pnr": pnr, "location": ["checkin"], "lastNode": "checkin", 'lastSeen': datetime.datetime.utcnow()}
+        nodego = {"_id": tagdata, "pnr": pnr, "location": ["checkin"], "lastNode": "checkin", "status":"checkin", "flightno":flightno, 'lastSeen': datetime.datetime.utcnow()}
         try:
             mycol.insert_one(dbgo)
             nodes.insert_one(nodego)
         except:
-            return ("<p>Error</p>")
+            return render_template('confirmation.html',user_image=pic1, data=tagdata, pnr=pnr, name=name, fno=flightno, err="Swal.fire")
         return render_template('confirmation.html',user_image=pic1, data=tagdata, pnr=pnr, name=name, fno=flightno)
     else:
         return render_template('registration.html', user_image=pic1)
@@ -103,7 +105,7 @@ def update():
 @app.route("/track", methods=['GET', 'POST'])
 def track():
     if 'admin' in session:
-        tdata = nodes.find({}, {"_id": 1, 'lastNode': 1,'lastSeen': 1, 'pnr': 1, 'location': 1})
+        tdata = nodes.find({}, {"_id": 1, 'lastNode': 1, 'flightno': 1,'lastSeen': 1, 'pnr': 1, 'location': 1})
         return render_template('track.html', data=tdata)
     else:
         return render_template('alogin.html', user_image=pic1)
@@ -114,11 +116,14 @@ def search():
     if 'admin' in session:
         if request.method == 'POST':
             pnr = request.form['pnr']
-            tdata = nodes.find({'pnr': pnr}, {"pnr": 1, 'lastNode': 1, 'lastSeen': 1, 'pnr': 1, 'location': 1})
+            tdata = nodes.find({'pnr': pnr}, {"_id": 1, 'lastNode': 1, 'flightno': 1, 'lastSeen': 1, 'pnr': 1, 'location': 1})
             return render_template('track.html', data=tdata)
     else:
         return render_template('alogin.html', user_image=pic1)
 
+@app.route("/boarding", methods=['GET', 'POST'])
+def boarding():
+    return("Working on it")
 
 @app.route("/confirm", methods=['GET', 'POST'])
 def confirm():

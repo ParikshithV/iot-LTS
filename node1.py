@@ -1,8 +1,9 @@
 from Adafruit_IO import Client, MQTTClient
 import pymongo
 import datetime
-dbconn = pymongo.MongoClient("mongodb+srv://zappieruser:userpassword@luggagereg.qodbd.mongodb.net/LuggageReg?retryWrites=true&w=majority")
-mydb = dbconn['LuggageReg']
+dbconn = pymongo.MongoClient("mongodb+srv://zappieruser:userpassword@luggagetracking.qodbd.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
+# dbconn = pymongo.MongoClient()
+mydb = dbconn['luggageTracking']
 nodes = mydb["trackdb"]
 aio = Client('RedRabbit1', 'aio_gykX28Fv6J5XVu33poXHccsjwqaa')
 

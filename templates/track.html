@@ -157,41 +157,51 @@
         </div>
     </nav>
     <div class="container my-4">
-        <form action="/search" method="POST">
+        <form action="/boarding" method="POST">
             <div class="mb-3">
-                <label for="pnr">Luggage Tag Number :</label>
+                <label for="pnr">Flight Number :</label>
+                <input type="text" id="pnr" name="pnr" class="form-control" style="width: 35%;"
+                    placeholder="Flight Number">
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 200px;">Set Boarding</button>
+        </form><br>
+    </div>
+
+    <div class="card"><br>
+        <form action="/search" method="POST" style="padding-left: 2%">
+            <div class="mb-3">
+                <label for="pnr">Luggage Search :</label>
                 <input type="text" id="pnr" name="pnr" class="form-control" style="width: 35%;"
                     placeholder="PNR Number">
             </div>
             <button type="submit" class="btn btn-primary" style="width: 100px;">Search</button>
         </form>
-    </div>
-
-    <div class="card">
         <div style="padding: 0 5px;" class="prodd">
             <h3 style="padding-top: 2%; padding-left: 2%;">Luggage Tracking Details:</h3>
             <table>
                 <tr>
                     <th>Luggage Tag Number</th>
+                    <th>PNR Number</th>
+                    <th>Flight No</th>
                     <th>Last Seen at Node</th>
                     <th>Last Seen (UTC Time)</th>
                     <th>Last Seen (Local Time)</th>
-                    <th>Luggage Tag ID</th>
                 </tr>
                 {% for item in data %}
                 <tr>
                     <td>{{ item._id }}</td>
+                    <td>{{ item.pnr }}</td>
+                    <td>{{ item.flightno }}</td>
                     <td>{{ item.lastNode }}</td>
                     <td>{{ item.lastSeen }}</td>
                     <script>
                         var localDate = new Date('{{item.lastSeen}} Z')
                         document.write('<td>', localDate, '</td>')
                     </script>
-                    <td>{{ item.tag_id }}</td>
                 </tr>
                 <tr style="border-bottom: 1pt solid black;">
                     <th>History:</th>
-                    <td colspan="4">
+                    <td colspan="5">
                         <div class="stepper-wrapper">
                             {% for node in item.location %}
                             <div class="stepper-item completed">
@@ -210,18 +220,10 @@
 
 
 
-    <!-- Optional JavaScript; choose one of the two! -->
-
-    <!-- Option 1: Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
         crossorigin="anonymous"></script>
 
-    <!-- Option 2: Separate Popper and Bootstrap JS -->
-    <!--
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>
-    -->
 </body>
 
 </html>

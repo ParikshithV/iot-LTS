@@ -55,7 +55,7 @@ def adminlogin():
         if (name=='admin' and password=='pesu'):
             session['admin'] = 'admin'
             tdata = nodes.find({}, {"pnr": 1, 'lastNode': 1,'lastSeen': 1, 'pnr': 1, 'location': 1})
-            return render_template('track.html', data=tdata)
+            return render_template('track.html', data=tdata, scpt='alerts')
         else:
             return render_template('alogin.html', user_image=pic1, err="alert")
     else:

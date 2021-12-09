@@ -71,12 +71,12 @@
   </nav>
 
   <section class="form my-5 mx-5" onsubmit="rfidAnimate()">
-    <div class="container">
-      <div class="row gx-0 pb-0" style="max-height: 600px;">
+    <div class="container" style="padding-top: 0px;">
+      <div class="row gx-0 pb-0">
         <div class="col-lg-5">
           <img src="{{user_image}}" class="img-fluid" alt="side-image">
         </div>
-        <div class="col-lg-7 px-5 pt-5">
+        <div class="col-lg-7 px-5 pt-1">
           <h1 class="font-weight-bold py-2">Enter Passenger Details</h1>
 
           <form action="/read" , method="POST">
@@ -86,13 +86,21 @@
                 <input type="text" name="pnr" id="pnr" class="form-control my-3 p-3" placeholder="PNR" required>
               </div>
             </div>
-            <div class="form-row">
-              <div class="col-lg-7">
-                <label for="flight_no">Flight No :</label>
-                <input type="text" name="flightno" id="flight_no" class="form-control my-3 p-3" placeholder="Flignt no."
-                  required>
-              </div>
-            </div>
+            <table>
+              <tr style="width: 100%;">
+                <td>
+                  <label for="flightno">Flight No :</label>
+                  <input type="text" name="flightno" id="flight_no" class="form-control my-3 p-3"
+                    placeholder="Flight no." style="max-width: 200px;" required>
+                </td>
+                <td style="padding-left: 2%;">
+                  <label for="flightno">Connecting Flight No :</label><br>
+                  <!-- <small>⚠️ Do not edit for direct flight</small> -->
+                  <input type="text" name="connflightno" value='-' id="cflight_no" class="form-control my-3 p-3"
+                    placeholder="Flight no." style="max-width: 200px;" required>
+                </td>
+              </tr>
+            </table>
             <div class="form-row">
               <div class="col-lg-7">
                 <label for="p_name">Passenger Name :</label>
@@ -105,10 +113,10 @@
                 <button type="submit" class="btn btn-outline-dark">Scan Baggage Tag and Check In</button>
               </div>
             </div>
-
-          </form>
         </div>
+        </form>
       </div>
+    </div>
     </div>
   </section>
 

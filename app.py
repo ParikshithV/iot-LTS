@@ -18,6 +18,7 @@ mydb = dbconn['luggageTracking']
 feedbk = mydb["feedback"]
 mycol = mydb["luggagedb"]
 nodes = mydb["trackdb"]
+alerts = mydb["alerts"]
 aio = Client('RedRabbit1', 'aio_gykX28Fv6J5XVu33poXHccsjwqaa')
 
 
@@ -90,6 +91,7 @@ def read():
     if request.method == 'POST':
         pnr = request.form['pnr']
         flightno = request.form['flightno']
+        connflightno = request.form['connflightno']
         name = request.form['name']
 
         toggle = aio.feeds('rfidswitch')
@@ -102,7 +104,7 @@ def read():
         data = aio.feeds('rfiddata')
         dataval = aio.receive(data.key)
         tagval = dataval.value
-        return render_template('confirmation.html',user_image=pic1, data=dataval.value, pnr=pnr, name=name, fno=flightno)
+        return render_template('confirmation.html',user_image=pic1, data=dataval.value, pnr=pnr, name=name, fno=flightno, cfno=connflightno)
     else:
         return render_template('registration.html', user_image=pic1)
 
@@ -112,16 +114,17 @@ def update():
     if request.method == 'POST':
         pnr = request.form['pnr']
         flightno = request.form['flightno']
+        cflightno = request.form['cflightno']
         name = request.form['name']
         tagdata = request.form['data']
         dbgo = {"_id": tagdata, "pnr": pnr, "flightno": flightno, "name": name}
-        nodego = {"_id": tagdata, "pnr": pnr, "location": ["checkin"], "lastNode": "checkin", "status":"checkin", "flightno":flightno, 'lastSeen': datetime.datetime.utcnow()}
+        nodego = {"_id": tagdata, "pnr": pnr, "location": ["checkin"], "lastNode": "checkin", "status":"checkin", "con_status":"na", "flightno":flightno, "conn_flightno":cflightno, 'lastSeen': datetime.datetime.utcnow()}
         try:
             mycol.insert_one(dbgo)
             nodes.insert_one(nodego)
         except:
-            return render_template('confirmation.html',user_image=pic1, data=tagdata, pnr=pnr, name=name, fno=flightno, err="Swal.fire")
-        return render_template('confirmation.html',user_image=pic1, data=tagdata, pnr=pnr, name=name, fno=flightno)
+            return render_template('confirmation.html',user_image=pic1, data=tagdata, pnr=pnr, name=name, fno=flightno, cfno=cflightno, err="Swal.fire")
+        return render_template('confirmation.html',user_image=pic1, data=tagdata, pnr=pnr, name=name, fno=flightno, cfno=cflightno)
     else:
         return render_template('registration.html', user_image=pic1)
 
@@ -129,8 +132,8 @@ def update():
 @app.route("/track", methods=['GET', 'POST'])
 def track():
     if 'admin' in session:
-        tdata = nodes.find({}, {"_id": 1, 'lastNode': 1, 'flightno': 1,'lastSeen': 1, 'pnr': 1, 'location': 1})
-        return render_template('track.html', data=tdata)
+        tdata = nodes.find({}, {"_id": 1, 'lastNode': 1, 'flightno': 1, 'conn_flightno': 1,'lastSeen': 1, 'pnr': 1, 'location': 1})
+        return render_template('track.html', data=tdata, scpt='alerts')
     else:
         return render_template('alogin.html', user_image=pic1)
 
@@ -141,13 +144,34 @@ def search():
         if request.method == 'POST':
             pnr = request.form['pnr']
             tdata = nodes.find({'pnr': pnr}, {"_id": 1, 'lastNode': 1, 'flightno': 1, 'lastSeen': 1, 'pnr': 1, 'location': 1})
-            return render_template('track.html', data=tdata)
+            return render_template('track.html', data=tdata, scpt='alerts')
     else:
         return render_template('alogin.html', user_image=pic1)
 
 @app.route("/boarding", methods=['GET', 'POST'])
 def boarding():
-    return("Working on it")
+    if request.method == 'POST':
+        alrtid=""
+        flno = request.form['flno']
+        ftype = request.form['ftype']
+        if ftype=="direct":
+            res=nodes.find({'$and':[{'status':{'$ne': 'boarding'}},{'flightno': flno}]},{"_id": 1, 'lastNode': 1, 'flightno': 1, 'lastSeen': 1, 'pnr': 1, 'location': 1,'status':1, })
+            count=res.count()
+            if count==0:
+                alrtid="alerts"
+            tdata = nodes.find({}, {"_id": 1, 'lastNode': 1, 'flightno': 1, 'conn_flightno': 1, 'lastSeen': 1, 'pnr': 1, 'location': 1})
+        else:
+            res=nodes.find({'$and':[{'conn_status':{'$ne': 'boarding'}},{'conn_flightno': flno}]},{"_id": 1, 'lastNode': 1, 'flightno': 1, 'conn_flightno': 1, 'lastSeen': 1, 'pnr': 1, 'location': 1,'status':1, })
+            count=res.count()
+            if count==0:
+                alrtid="alerts"
+            tdata = nodes.find({}, {"_id": 1, 'lastNode': 1, 'flightno': 1, 'conn_flightno': 1, 'lastSeen': 1, 'pnr': 1, 'location': 1})
+        return render_template('track.html', data=tdata, alrt=res, scpt=alrtid)
+
+@app.route("/connflight", methods=['GET', 'POST'])
+def connflight():
+    return render_template('track.html',user_image=pic1)
+
 
 @app.route("/confirm", methods=['GET', 'POST'])
 def confirm():

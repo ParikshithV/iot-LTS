@@ -1,11 +1,12 @@
 from Adafruit_IO import Client, MQTTClient
 import pymongo
 import datetime
-dbconn = pymongo.MongoClient("mongodb+srv://zappieruser:userpassword@luggagetracking.qodbd.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
-# dbconn = pymongo.MongoClient()
+# dbconn = pymongo.MongoClient("mongodb+srv://zappieruser:userpassword@luggagetracking.qodbd.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
+dbconn = pymongo.MongoClient()
 mydb = dbconn['luggageTracking']
 nodes = mydb["trackdb"]
 aio = Client('RedRabbit1', 'aio_gykX28Fv6J5XVu33poXHccsjwqaa')
+temp=0
 
 
 ADAFRUIT_IO_KEY = 'aio_gykX28Fv6J5XVu33poXHccsjwqaa'
@@ -26,11 +27,15 @@ def disconnected(client):
     sys.exit(1)
 
 def message(client, feed_id, payload):
-    nodes = mydb['trackdb']
-    nodes.update_one({"tag_id" : payload}, {'$push': {'location': 'node2'}})
-    nodes.update_one({"tag_id" : payload}, {'$set': {'lastNode': 'node2'}})
-    nodes.update_one({"tag_id" : payload}, {'$set': {'status': 'boarding'}})
-    nodes.update_one({"tag_id" : payload}, {'$set': {'lastSeen': datetime.datetime.utcnow()}})
+    global temp
+    if temp!=payload:
+        nodes.update_one({"_id" : payload}, {'$push': {'location': 'node2'}})
+        nodes.update_one({"_id" : payload}, {'$set': {'lastNode': 'node2'}})
+        nodes.update_one({"_id" : payload}, {'$set': {'status': 'boarding'}})
+        nodes.update_one({"_id" : payload}, {'$set': {'lastSeen': datetime.datetime.utcnow()}})
+    else:
+        print('Tag scan repeated')
+    temp=payload
     print('Feed {0} received new value: {1}'.format(feed_id, payload))
 
 client = MQTTClient(ADAFRUIT_IO_USERNAME, ADAFRUIT_IO_KEY)

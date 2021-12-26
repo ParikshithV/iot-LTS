@@ -11,6 +11,7 @@ picFolder = os.path.join('static')
 app.config['UPLOAD_FOLDER'] = picFolder
 pic1 = os.path.join(app.config['UPLOAD_FOLDER'], 'img4.jpg')
 pic2 = os.path.join(app.config['UPLOAD_FOLDER'], 'img9.jpg')
+checkin = os.path.join(app.config['UPLOAD_FOLDER'], 'checkin.png')
 
 # dbconn =  pymongo.MongoClient("mongodb+srv://zappieruser:userpassword@luggagetracking.qodbd.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
 dbconn = pymongo.MongoClient()
@@ -83,7 +84,7 @@ def userlogin():
 
 @app.route("/registration", methods=['GET', 'POST'])
 def reg():
-    return render_template('registration.html', user_image=pic1)
+    return render_template('registration.html', user_image=checkin)
 
 
 @app.route("/read", methods=['GET', 'POST'])
@@ -104,9 +105,9 @@ def read():
         data = aio.feeds('rfiddata')
         dataval = aio.receive(data.key)
         tagval = dataval.value
-        return render_template('confirmation.html',user_image=pic1, data=dataval.value, pnr=pnr, name=name, fno=flightno, cfno=connflightno)
+        return render_template('confirmation.html',user_image=checkin, data=dataval.value, pnr=pnr, name=name, fno=flightno, cfno=connflightno)
     else:
-        return render_template('registration.html', user_image=pic1)
+        return render_template('registration.html', user_image=checkin)
 
 
 @app.route("/update", methods=['GET', 'POST'])
@@ -123,10 +124,10 @@ def update():
             mycol.insert_one(dbgo)
             nodes.insert_one(nodego)
         except:
-            return render_template('confirmation.html',user_image=pic1, data=tagdata, pnr=pnr, name=name, fno=flightno, cfno=cflightno, err="Swal.fire")
-        return render_template('confirmation.html',user_image=pic1, data=tagdata, pnr=pnr, name=name, fno=flightno, cfno=cflightno)
+            return render_template('confirmation.html',user_image=checkin, data=tagdata, pnr=pnr, name=name, fno=flightno, cfno=cflightno, err="Swal.fire")
+        return render_template('confirmation.html',user_image=checkin, data=tagdata, pnr=pnr, name=name, fno=flightno, cfno=cflightno)
     else:
-        return render_template('registration.html', user_image=pic1)
+        return render_template('registration.html', user_image=checkin)
 
 
 @app.route("/track", methods=['GET', 'POST'])

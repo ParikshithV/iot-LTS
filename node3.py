@@ -29,8 +29,8 @@ def disconnected(client):
 def message(client, feed_id, payload):
     global temp
     if temp!=payload:
-        nodes.update_one({"_id" : payload}, {'$push': {'location': 'node3'}})
-        nodes.update_one({"_id" : payload}, {'$set': {'lastNode': 'node3'}})
+        nodes.update_one({"_id" : payload}, {'$push': {'location': 'boarding'}})
+        nodes.update_one({"_id" : payload}, {'$set': {'lastNode': 'boarding'}})
         nodes.update_one({"_id" : payload}, {'$set': {'status': 'boarding'}})
         nodes.update_one({"_id" : payload}, {'$set': {'lastSeen': datetime.datetime.utcnow()}})
     else:

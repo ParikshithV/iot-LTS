@@ -29,9 +29,9 @@ def disconnected(client):
 def message(client, feed_id, payload):
     global temp
     if temp!=payload:
-        nodes.update_one({"_id" : payload}, {'$push': {'location': 'node4'}})
-        nodes.update_one({"_id" : payload}, {'$set': {'lastNode': 'node4'}})
-        nodes.update_one({"_id" : payload}, {'$set': {'status': 'boarding'}})
+        nodes.update_one({"_id" : payload}, {'$push': {'location': 'conn_boarding'}})
+        nodes.update_one({"_id" : payload}, {'$set': {'lastNode': 'conn_boarding'}})
+        nodes.update_one({"_id" : payload}, {'$set': {'con_status': 'boarding'}})
         nodes.update_one({"_id" : payload}, {'$set': {'lastSeen': datetime.datetime.utcnow()}})
     else:
         print('Tag scan repeated')

@@ -33,7 +33,7 @@ WiFiClient client;
 
 Adafruit_MQTT_Client mqtt(&client, AIO_SERVER, AIO_SERVERPORT, AIO_USERNAME, AIO_KEY);
 
-Adafruit_MQTT_Publish rfidata = Adafruit_MQTT_Publish(&mqtt, AIO_USERNAME "/feeds/node1");
+Adafruit_MQTT_Publish rfidata = Adafruit_MQTT_Publish(&mqtt, AIO_USERNAME "/feeds/nodenum");
 
 MFRC522 rfid(SS_PIN, RST_PIN);  // Create MFRC522 instance
 

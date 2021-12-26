@@ -31,7 +31,7 @@ def message(client, feed_id, payload):
     if temp!=payload:
         nodes.update_one({"_id" : payload}, {'$push': {'location': 'node2'}})
         nodes.update_one({"_id" : payload}, {'$set': {'lastNode': 'node2'}})
-        nodes.update_one({"_id" : payload}, {'$set': {'status': 'boarding'}})
+        # nodes.update_one({"_id" : payload}, {'$set': {'status': 'boarding'}})
         nodes.update_one({"_id" : payload}, {'$set': {'lastSeen': datetime.datetime.utcnow()}})
     else:
         print('Tag scan repeated')

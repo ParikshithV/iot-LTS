@@ -27,7 +27,7 @@
 #define AIO_SERVER      "io.adafruit.com"
 #define AIO_SERVERPORT  1883                   // use 8883 for SSL
 #define AIO_USERNAME    "RedRabbit1" // AdaFruit Usernmae
-#define AIO_KEY         "aio_gykX28Fv6J5XVu33poXHccsjwqaa"// AdaFruit Key
+#define AIO_KEY         "aio_api_key"// AdaFruit Key
 
 WiFiClient client;
 

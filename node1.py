@@ -9,7 +9,7 @@ aio = Client('RedRabbit1', 'aio_api_key')
 temp=0
 
 
-ADAFRUIT_IO_KEY = 'aio_gykX28Fv6J5XVu33poXHccsjwqaa'
+ADAFRUIT_IO_KEY = 'aio_api_key'
 
 ADAFRUIT_IO_USERNAME = 'RedRabbit1'
 

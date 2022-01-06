@@ -20,7 +20,7 @@ feedbk = mydb["feedback"]
 mycol = mydb["luggagedb"]
 nodes = mydb["trackdb"]
 alerts = mydb["alerts"]
-aio = Client('RedRabbit1', 'aio_gykX28Fv6J5XVu33poXHccsjwqaa')
+aio = Client('RedRabbit1', 'aio_api_key')
 
 
 @app.route("/", methods=['GET', 'POST'])

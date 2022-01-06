@@ -5,7 +5,7 @@ import datetime
 dbconn = pymongo.MongoClient()
 mydb = dbconn['luggageTracking']
 nodes = mydb['trackdb']
-aio = Client('RedRabbit1', 'aio_gykX28Fv6J5XVu33poXHccsjwqaa')
+aio = Client('RedRabbit1', 'aio_api_key')
 temp=0
 
 
